@@ -1,0 +1,36 @@
+name: Build & Publish Release APK
+
+on:
+  push:
+    tags:
+      - '*' # Sadece yeni bir etiket (v1.0 gibi) pushlandığında çalışır
+
+permissions:
+  contents: write # GitHub'a APK yükleyebilmek için bu izin şarttır
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # Projeniz Java 11 istiyorsa '11' yapabilirsiniz
+          distribution: 'zulu'
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK to Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app/build/outputs/apk/release/*.apk"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          

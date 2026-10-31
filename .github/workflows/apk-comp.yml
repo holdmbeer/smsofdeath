@@ -1,0 +1,34 @@
+name: Build & Publish Release APK
+
+on:
+  push:
+    tags:
+      - '*' # Sadece yeni bir etiket (tag) pushlandığında çalışır (Örn: v1.0)
+permissions:
+  contents: write
+  
+jobs:
+  Gradle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # Projenizin ihtiyacına göre 11 veya 17 yapabilirsiniz
+          distribution: 'zulu'
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Releasing using Hub
+        uses: sangatdesai/release-apk@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_FOLDER: app
+          

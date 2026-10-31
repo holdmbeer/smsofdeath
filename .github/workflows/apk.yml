@@ -1,12 +1,12 @@
-name: Build & Publish Release APK
+name: Build & Publish Debug APK
 
 on:
   push:
     tags:
-      - '*' # Sadece yeni bir etiket (v1.0 gibi) pushlandığında çalışır
+      - '*' # Yeni bir etiket (tag) oluşturulduğunda çalışır
 
 permissions:
-  contents: write # GitHub'a APK yükleyebilmek için bu izin şarttır
+  contents: write # Release sayfasına dosya yükleme izni
 
 jobs:
   build:
@@ -18,19 +18,20 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17' # Projeniz Java 11 istiyorsa '11' yapabilirsiniz
+          java-version: '17' # Projenize göre '11' de yapabilirsiniz
           distribution: 'zulu'
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
-      - name: Build Release APK
-        run: ./gradlew assembleRelease
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
-      - name: Upload APK to Release
+      - name: Upload Debug APK to Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "app/build/outputs/apk/release/*.apk"
+          artifacts: "app/build/outputs/apk/debug/*.apk"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
+          
           
